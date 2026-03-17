@@ -2,11 +2,14 @@ from aiogram import types, F
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice, PreCheckoutQuery
 from datetime import datetime, timedelta
 import re
+import logging
 from src.loader import dp, bot
 from src.payments import TARIFFS, show_tariffs, get_back_to_tariffs_button
-from src.config import PAYMENT_CONTACT, PREMIUM_STARS_PRICE
+from src.config import PAYMENT_CONTACT, PREMIUM_STARS_PRICE, ADMINS
 from src.db import DatabaseManager, AsyncSessionLocal
 from src.models import Payment, PaymentMethod, PaymentStatus
+
+logger = logging.getLogger(__name__)
 
 @dp.message(F.text == "💰 Услуги")
 async def services_menu(message: types.Message):
@@ -29,6 +32,7 @@ async def show_tariff_detail(callback: types.CallbackQuery):
 
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="⭐️ Оплатить Stars", callback_data=f"pay_stars_{tariff_id}")],
+        [InlineKeyboardButton(text="💰 Оплатить вручную", callback_data=f"pay_manual_{tariff_id}")],
         [InlineKeyboardButton(text="◀ К тарифам", callback_data="show_tariffs")]
     ])
 
@@ -44,7 +48,6 @@ async def confirm_stars_payment(callback: types.CallbackQuery):
         await callback.message.answer("Тариф не найден")
         return
 
-    # Показываем подтверждение перед отправкой счёта
     text = (
         f"⭐️ *Оплата через Telegram Stars*\n\n"
         f"*Тариф:* {tariff['name']}\n"
@@ -73,7 +76,6 @@ async def process_stars_payment(callback: types.CallbackQuery):
     if not user:
         user = await DatabaseManager.create_user(telegram_id=callback.from_user.id)
 
-    # Создаём запись о платеже
     async with AsyncSessionLocal() as session:
         payment = Payment(
             user_id=user.id,
@@ -87,7 +89,6 @@ async def process_stars_payment(callback: types.CallbackQuery):
         await session.commit()
         await session.refresh(payment)
 
-    # Отправляем счёт
     prices = [LabeledPrice(label="Премиум-доступ", amount=PREMIUM_STARS_PRICE)]
     await callback.message.answer_invoice(
         title="Оплата премиум-доступа",
@@ -141,6 +142,52 @@ async def successful_payment_handler(message: types.Message):
             "✅ Оплата прошла успешно! Премиум-доступ активирован.",
             reply_markup=get_back_to_tariffs_button()
         )
+
+# ------------------ Ручная оплата ------------------
+@dp.callback_query(F.data.startswith("pay_manual_"))
+async def process_manual_payment(callback: types.CallbackQuery):
+    await callback.answer()
+    tariff_id = callback.data.replace("pay_manual_", "")
+    tariff = TARIFFS.get(tariff_id)
+    if not tariff:
+        await callback.message.answer("❌ Тариф не найден")
+        return
+
+    await callback.message.answer(
+        f"💰 *Ручная оплата*\n\n"
+        f"Тариф: {tariff['name']}\n"
+        f"Сумма: {tariff['price']}₽\n\n"
+        f"Для оплаты напишите администратору:\n"
+        f"{PAYMENT_CONTACT}\n\n"
+        f"После подтверждения оплаты вам будет активирован премиум.",
+        parse_mode="Markdown",
+        reply_markup=get_back_to_tariffs_button()
+    )
+
+    days = 30
+    match = re.search(r'(\d+)', tariff['duration'])
+    if match:
+        days = int(match.group(1))
+    elif "месяц" in tariff['duration']:
+        days = 30
+    elif "пол года" in tariff['duration']:
+        days = 180
+
+    for admin_id in ADMINS:
+        try:
+            await bot.send_message(
+                admin_id,
+                f"💰 *Запрос на ручную оплату*\n"
+                f"Пользователь: {callback.from_user.full_name} (@{callback.from_user.username})\n"
+                f"ID: `{callback.from_user.id}`\n"
+                f"Тариф: {tariff['name']}\n"
+                f"Сумма: {tariff['price']}₽\n\n"
+                f"После подтверждения оплаты используй:\n"
+                f"`/premium {callback.from_user.id} {days}`",
+                parse_mode="Markdown"
+            )
+        except Exception as e:
+            logger.error(f"Не удалось уведомить админа {admin_id}: {e}")
 
 # ------------------ Возврат к тарифам ------------------
 @dp.callback_query(F.data == "show_tariffs")
