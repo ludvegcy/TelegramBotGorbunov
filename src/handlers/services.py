@@ -5,7 +5,7 @@ import re
 import logging
 from src.loader import dp, bot
 from src.payments import TARIFFS, show_tariffs, get_back_to_tariffs_button
-from src.config import PAYMENT_CONTACT, PREMIUM_STARS_PRICE, ADMINS
+from src.config import PAYMENT_CONTACT, ADMINS
 from src.db import DatabaseManager, AsyncSessionLocal
 from src.models import Payment, PaymentMethod, PaymentStatus
 
@@ -51,7 +51,7 @@ async def confirm_stars_payment(callback: types.CallbackQuery):
     text = (
         f"⭐️ *Оплата через Telegram Stars*\n\n"
         f"*Тариф:* {tariff['name']}\n"
-        f"*Стоимость:* {PREMIUM_STARS_PRICE} Stars\n"
+        f"*Стоимость:* {tariff['stars_price']} Stars\n"
         f"*Длительность:* {tariff['duration']}\n\n"
         f"Подтвердите оплату или вернитесь назад."
     )
@@ -80,7 +80,7 @@ async def process_stars_payment(callback: types.CallbackQuery):
         payment = Payment(
             user_id=user.id,
             tariff_id=tariff_id,
-            amount=PREMIUM_STARS_PRICE,
+            amount=tariff['stars_price'],
             currency="XTR",
             payment_method=PaymentMethod.STARS,
             status=PaymentStatus.PENDING
@@ -89,7 +89,7 @@ async def process_stars_payment(callback: types.CallbackQuery):
         await session.commit()
         await session.refresh(payment)
 
-    prices = [LabeledPrice(label="Премиум-доступ", amount=PREMIUM_STARS_PRICE)]
+    prices = [LabeledPrice(label="Премиум-доступ", amount=tariff['stars_price'])]
     await callback.message.answer_invoice(
         title="Оплата премиум-доступа",
         description=f"Тариф: {tariff['name']}\nДлительность: {tariff['duration']}",

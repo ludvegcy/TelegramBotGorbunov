@@ -5,6 +5,7 @@ TARIFFS = {
     "2weeks": {
         "name": "Две недели 🔥",
         "price": 2999,
+        "stars_price": 3000,
         "duration": "14 дней",
         "description": (
             "🔥 *14 ДНЕЙ К НОВОМУ СЕБЕ*\n\n"
@@ -36,6 +37,7 @@ TARIFFS = {
     "month": {
         "name": "Месяц 🏃🏻",
         "price": 5999,
+        "stars_price": 6000,
         "duration": "1 месяц",
         "description": (
             "🏃🏻 *МЕСЯЦ ТРАНСФОРМАЦИИ*\n\n"
@@ -57,6 +59,7 @@ TARIFFS = {
     "halfyear": {
         "name": "Пол года 👑",
         "price": 19999,
+        "stars_price": 20000,
         "duration": "6 месяцев",
         "description": (
             "👑 *ПОЛ ГОДА К ТЕЛУ МЕЧТЫ*\n\n"
@@ -83,6 +86,7 @@ TARIFFS = {
     "full_month": {
         "name": "Полная версия (месяц) 💎",
         "price": 299,
+        "stars_price": 300,
         "duration": "1 месяц",
         "description": (
             "💎 *ПОЛНАЯ ВЕРСИЯ БОТА*\n\n"
