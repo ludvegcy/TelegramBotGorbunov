@@ -14,7 +14,7 @@ else:
 
 PAYMENT_CONTACT = os.getenv("PAYMENT_CONTACT", "@krivha9")
 
-PREMIUM_STARS_PRICE = 1
+PREMIUM_STARS_PRICE = 150
 
 BASE_DIR = Path(__file__).parent.parent
 MEDIA_DIR = BASE_DIR / "media"

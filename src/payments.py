@@ -106,7 +106,7 @@ def get_tariffs_keyboard():
         [InlineKeyboardButton(text="🔥 Две недели - 2999₽", callback_data="tariff_2weeks")],
         [InlineKeyboardButton(text="🏃🏻 Месяц - 5999₽", callback_data="tariff_month")],
         [InlineKeyboardButton(text="👑 Пол года - 19999₽", callback_data="tariff_halfyear")],
-        [InlineKeyboardButton(text="💎 Полная версия - 149₽/мес", callback_data="tariff_full_month")],
+        [InlineKeyboardButton(text="💎 Полная версия - 299₽/мес", callback_data="tariff_full_month")],
         [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_main")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
