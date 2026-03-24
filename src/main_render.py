@@ -8,7 +8,7 @@ from src import handlers
 
 dp.update.middleware(TimeLoggingMiddleware())
 
-PORT = int(os.getenv("PORT", 8000))
+PORT = int(os.getenv("PORT", 8080))
 
 async def health(request):
     return web.Response(text="OK")
