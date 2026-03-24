@@ -99,3 +99,49 @@ async def diet_plan(message: types.Message, **kwargs):
         "• Советы по режиму"
     )
     await message.answer(text, parse_mode="Markdown")
+
+@dp.message(F.text == "📋 Составление питания")
+async def diet_plan_choice(message: types.Message):
+    if not await DatabaseManager.is_premium_user(message.from_user.id):
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="💎 Купить полную версию", callback_data="tariff_full_month")]
+        ])
+        await message.answer(
+            "🔒 Эта функция доступна только в полной версии.\n\n"
+            "Оформи подписку в разделе 💰 Услуги.",
+            parse_mode="Markdown",
+            reply_markup=kb
+        )
+        return
+
+    # Клавиатура выбора тренера
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="👨‍🏫 Валентин", callback_data="diet_plan_valentin")],
+        [InlineKeyboardButton(text="⚡ Алексей Панков", callback_data="diet_plan_alexey")],
+        [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_main")]
+    ])
+    await message.answer(
+        "📋 Выберите тренера, который составит для вас индивидуальный план питания:",
+        reply_markup=kb
+    )
+
+@dp.callback_query(F.data.startswith("diet_plan_"))
+async def diet_plan_choose_trainer(callback: types.CallbackQuery):
+    trainer_key = callback.data.replace("diet_plan_", "")
+    if trainer_key == "valentin":
+        contact = "@krivha9"
+        name = "Валентин"
+    elif trainer_key == "alexey":
+        contact = "@irulebreaker"
+        name = "Алексей Панков"
+    else:
+        await callback.answer("Неизвестный тренер")
+        return
+
+    text = (
+        f"👨‍🏫 *{name}* поможет составить индивидуальный план питания.\n\n"
+        f"Напишите ему: {contact}\n\n"
+        f"Не забудьте упомянуть, что вы от бота Gorbunov Fitness!"
+    )
+    await callback.message.edit_text(text, parse_mode="Markdown")
+    await callback.answer()
