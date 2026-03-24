@@ -51,3 +51,11 @@ class ReviewManager:
             stmt = select(Review).where(Review.user_id == user.id).order_by(Review.created_at.desc())
             result = await session.execute(stmt)
             return result.scalars().all()
+
+    @staticmethod
+    async def get_all_reviews(limit: int = 50) -> List[Review]:
+        """Получает последние limit отзывов, отсортированных по дате."""
+        async with AsyncSessionLocal() as session:
+            stmt = select(Review).order_by(Review.created_at.desc()).limit(limit)
+            result = await session.execute(stmt)
+            return result.scalars().all()
