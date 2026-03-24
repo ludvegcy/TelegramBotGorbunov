@@ -99,26 +99,3 @@ async def diet_plan(message: types.Message, **kwargs):
         "• Советы по режиму"
     )
     await message.answer(text, parse_mode="Markdown")
-
-@dp.message(F.text == "🎵 Треки")
-async def tracks_menu(message: types.Message):
-    if not await DatabaseManager.is_premium_user(message.from_user.id):
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="💎 Купить полную версию", callback_data="tariff_full_month")]
-        ])
-        await message.answer(
-            "🔒 *Треки доступны только в полной версии*\n\n"
-            "Оформи подписку, чтобы получить доступ к музыкальным трекам для тренировок.",
-            parse_mode="Markdown",
-            reply_markup=kb
-        )
-        return
-    text = (
-        "🎵 *Треки для тренировок*\n\n"
-        "1. [Энергия утра](https://music.yandex.ru/...)\n"
-        "2. [Мотивация](https://music.yandex.ru/...)\n"
-        "3. [Силовой микс](https://music.yandex.ru/...)\n"
-        "4. [Кардио-драйв](https://music.yandex.ru/...)\n\n"
-        "Слушайте и тренируйтесь с удовольствием! 💪"
-    )
-    await message.answer(text, parse_mode="Markdown")

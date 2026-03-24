@@ -9,13 +9,11 @@ async def get_main_keyboard(telegram_id: int) -> ReplyKeyboardMarkup:
     buttons = [
         [KeyboardButton(text="💪 Тренировки")],
         [KeyboardButton(text="🍎 Питание"), KeyboardButton(text="📊 Прогресс")],
-        [KeyboardButton(text="📝 Памятки")],
     ]
     if is_premium:
         buttons.append([KeyboardButton(text="💊 БАДы и Спортпит")])
         buttons.append([KeyboardButton(text="🧪 ААС и фармакология"), KeyboardButton(text="🩸 Анализы")])
         buttons.append([KeyboardButton(text="👨‍🏫 Тренеры"), KeyboardButton(text="📋 Составление питания")])
-        buttons.append([KeyboardButton(text="🎵 Треки")])
     else:
         buttons.append([KeyboardButton(text="💊 БАДы (Premium) 🔒")])
         buttons.append([KeyboardButton(text="🧪 ААС (Premium) 🔒"), KeyboardButton(text="🩸 Анализы (Premium) 🔒")])
