@@ -7,7 +7,6 @@ from src.db import DatabaseManager
 from src.config import ADMINS
 from src.reviews import ReviewManager
 
-
 def is_admin(user_id: int) -> bool:
     return user_id in ADMINS
 
@@ -50,16 +49,16 @@ async def admin_set_premium(message: types.Message):
                 is_premium=True,
                 premium_until=datetime.now() + timedelta(days=days)
             )
-            await message.answer(f"✅ Премиум активирован для user_id {user_id} на {days} дней")
+            await message.answer(f"✅ Премиум активирован для user_id {user_id} на {days} дней", parse_mode=None)
         else:
             await DatabaseManager.create_user(
                 telegram_id=user_id,
                 is_premium=True,
                 premium_until=datetime.now() + timedelta(days=days)
             )
-            await message.answer(f"✅ Создан новый пользователь {user_id} с премиум на {days} дней")
+            await message.answer(f"✅ Создан новый пользователь {user_id} с премиум на {days} дней", parse_mode=None)
     except ValueError:
-        await message.answer("❌ Неверный формат. Используйте: /premium 123456789 30")
+        await message.answer("❌ Неверный формат. Используйте: /premium 123456789 30", parse_mode=None)
 
 @dp.message(Command("reviews"))
 async def admin_reviews(message: types.Message):
@@ -90,4 +89,4 @@ async def admin_reviews(message: types.Message):
         text += f"📝 {rev.text[:200]}\n"
         text += f"👤 {user_name} | {date}\n\n"
 
-    await message.answer(text, parse_mode="Markdown")
+    await message.answer(text, parse_mode=None)
