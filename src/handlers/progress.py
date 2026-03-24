@@ -42,7 +42,7 @@ async def progress_tracking(message: types.Message):
         [InlineKeyboardButton(text="➕ Добавить вес", callback_data="add_weight")],
         [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_main")]
     ])
-    await message.answer(progress_text, parse_mode="Markdown", reply_markup=kb)
+    await message.answer(progress_text, parse_mode=None, reply_markup=kb)
 
 @dp.callback_query(F.data == "add_weight")
 async def add_weight_start(callback: types.CallbackQuery, state: FSMContext):
