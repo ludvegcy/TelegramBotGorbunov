@@ -14,7 +14,9 @@ async def health(request):
     return web.Response(text="OK")
 
 async def start_bot():
-    """Запуск polling бота."""
+    # Удаляем вебхук, если он был установлен ранее
+    await bot.delete_webhook()
+    # Запускаем polling
     await dp.start_polling(bot)
 
 async def main():
