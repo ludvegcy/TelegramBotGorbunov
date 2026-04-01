@@ -29,10 +29,10 @@ TRAINERS = {
         )
     },
     "alexey": {
-        "name": "Алексей Панков",
+        "name": "Алексей",
         "photo": "trainers/Pankov.jpg",
         "description": (
-            "⚡️ *Персональный тренер тренажёрного зала — Панков Алексей* ⚡️\n\n"
+            "⚡️ *Персональный тренер тренажёрного зала — Алексей* ⚡️\n\n"
             "Опыт в фитнесе: более 5 лет\n\n"
             "*Специализация:*\n"
             "• Составление персонализированных планов занятий с учётом физических особенностей, возраста, состояния здоровья и желаемого результата каждого клиента;\n\n"
@@ -52,7 +52,7 @@ TRAINERS = {
 async def trainers_menu(message: types.Message):
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="👨‍🏫 Валентин", callback_data="trainer_valentin")],
-        [InlineKeyboardButton(text="⚡ Алексей Панков", callback_data="trainer_alexey")],
+        [InlineKeyboardButton(text="⚡ Алексей", callback_data="trainer_alexey")],
         [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_main")]
     ])
     await message.answer(
@@ -75,7 +75,7 @@ async def show_trainer_info(callback: types.CallbackQuery):
 
     if trainer_key == "alexey":
         short_desc = (
-            "⚡️ *Алексей Панков — персональный тренер* ⚡️\n\n"
+            "⚡️ *Алексей — персональный тренер* ⚡️\n\n"
             "*10 лет в спорте закалили характер, 5 лет в фитнесе отточили форму.*\n\n"
             "Я знаю, как превратить потенциал в результат. Мои достижения в троеборье — это фундамент, на котором я строю идеальные тела. Не просто тренер, а наставник, который прошел этот путь сам и поможет достичь гармонии силы и красоты вам.\n\n"
             f"Контакты: @irulebreakerr"
@@ -94,7 +94,6 @@ async def show_trainer_info(callback: types.CallbackQuery):
         await send_photo_with_cache(callback.message.chat.id, photo_path, short_desc, "Markdown")
         await callback.message.answer(details, parse_mode="Markdown")
 
-    # Пытаемся удалить исходное сообщение, игнорируем ошибку, если оно уже удалено
     try:
         await callback.message.delete()
     except TelegramBadRequest as e:

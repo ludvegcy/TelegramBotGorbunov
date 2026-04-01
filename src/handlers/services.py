@@ -5,7 +5,7 @@ import re
 import logging
 from src.loader import dp, bot
 from src.payments import TARIFFS, show_tariffs, get_back_to_tariffs_button
-from src.config import PAYMENT_CONTACT, ADMINS
+from src.config import PAYMENT_CONTACT, ADMINS, PREMIUM_CHAT_URL
 from src.db import DatabaseManager, AsyncSessionLocal
 from src.models import Payment, PaymentMethod, PaymentStatus
 
@@ -139,7 +139,10 @@ async def successful_payment_handler(message: types.Message):
                     )
 
         await message.answer(
-            "✅ Оплата прошла успешно! Премиум-доступ активирован.",
+            f"✅ Оплата прошла успешно! Премиум-доступ активирован.\n\n"
+            f"🎉 Теперь у вас есть доступ к закрытому чату премиум-пользователей:\n"
+            f"[Вступить в чат]({PREMIUM_CHAT_URL})",
+            parse_mode="Markdown",
             reply_markup=get_back_to_tariffs_button()
         )
 
