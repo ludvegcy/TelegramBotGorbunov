@@ -1,19 +1,25 @@
 import re
 import asyncio
+import logging
 from aiogram import types, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from src.loader import dp
+from src.loader import dp, bot
 from src.reviews import ReviewManager
 from src.constants import REVIEW_TYPES, REVIEW_PROMPTS, REVIEW_SUCCESS
 from src.keyboards import get_back_to_main_button
 from src.handlers.states import ReviewStates
+from src.db import DatabaseManager
+from src.config import ADMINS
+
+logger = logging.getLogger(__name__)
 
 async def show_reviews_menu(update: types.Message | types.CallbackQuery):
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="👨‍🏫 О тренере", callback_data="review_trainer")],
         [InlineKeyboardButton(text="🤖 О боте", callback_data="review_bot")],
         [InlineKeyboardButton(text="💡 Пожелание", callback_data="review_wish")],
+        [InlineKeyboardButton(text="📋 Посмотреть отзывы", callback_data="view_reviews")],
         [InlineKeyboardButton(text="📋 Мои отзывы", callback_data="my_reviews")],
         [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_main")]
     ])
@@ -107,6 +113,22 @@ async def save_review(message_or_callback, state: FSMContext, rating=None):
     )
     if review:
         await message_or_callback.answer(REVIEW_SUCCESS)
+
+        # Отправляем уведомление администраторам
+        user = await DatabaseManager.get_user(user_id)
+        for admin_id in ADMINS:
+            try:
+                await bot.send_message(
+                    admin_id,
+                    f"📝 *Новый отзыв*\n\n"
+                    f"Пользователь: {user.first_name} (@{user.username})\n"
+                    f"Тип: {review_type}\n"
+                    f"Оценка: {rating if rating else 'нет'}\n"
+                    f"Текст: {text[:200]}{'...' if len(text) > 200 else ''}",
+                    parse_mode="Markdown"
+                )
+            except Exception as e:
+                logger.error(f"Не удалось отправить отзыв админу {admin_id}: {e}")
     else:
         await message_or_callback.answer("❌ Ошибка при сохранении отзыва.")
     await state.clear()
@@ -126,7 +148,7 @@ async def my_reviews(callback: types.CallbackQuery):
         type_name = REVIEW_TYPES.get(r.review_type, r.review_type)
         target = f" (тренер {r.target_id})" if r.target_id else ""
         rating = f" Оценка: {r.rating}⭐" if r.rating else ""
-        date = r.created_at.strftime("%d.%m.%Y")
+        date = r.created_at.strftime("%d.%m.%Y %H:%M")
         text += f"• {type_name}{target}{rating}\n   {r.text[:50]}...\n   {date}\n\n"
     kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_reviews")]
@@ -136,3 +158,29 @@ async def my_reviews(callback: types.CallbackQuery):
 @dp.callback_query(F.data == "back_to_reviews")
 async def back_to_reviews(callback: types.CallbackQuery):
     await show_reviews_menu(callback)
+
+@dp.callback_query(F.data == "view_reviews")
+async def view_reviews(callback: types.CallbackQuery):
+    reviews = await ReviewManager.get_all_reviews(limit=5)
+    if not reviews:
+        await callback.message.answer("📭 Отзывов пока нет.")
+        return
+
+    text = "📋 *Последние отзывы:*\n\n"
+    for rev in reviews:
+        user = await DatabaseManager.get_user_by_id(rev.user_id)
+        user_name = user.first_name if user.first_name else str(user.telegram_id)
+
+        type_name = REVIEW_TYPES.get(rev.review_type, rev.review_type)
+        if rev.review_type == 'trainer':
+            target = "Валентин" if rev.target_id == 1 else "Алексей"
+            type_name = f"👨‍🏫 Отзыв о тренере {target}"
+
+        rating = f"⭐️ {rev.rating}" if rev.rating else ""
+        date = rev.created_at.strftime("%d.%m.%Y %H:%M")
+
+        text += f"*{type_name}* {rating}\n"
+        text += f"📝 {rev.text[:200]}\n"
+        text += f"👤 {user_name} | {date}\n\n"
+
+    await callback.message.edit_text(text, parse_mode="Markdown")

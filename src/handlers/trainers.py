@@ -76,8 +76,9 @@ async def show_trainer_info(callback: types.CallbackQuery):
     if trainer_key == "alexey":
         short_desc = (
             "⚡️ *Алексей Панков — персональный тренер* ⚡️\n\n"
-            f"Опыт: более 5 лет\n\n"
-            "👇 *Подробности в следующем сообщении*"
+            "*10 лет в спорте закалили характер, 5 лет в фитнесе отточили форму.*\n\n"
+            "Я знаю, как превратить потенциал в результат. Мои достижения в троеборье — это фундамент, на котором я строю идеальные тела. Не просто тренер, а наставник, который прошел этот путь сам и поможет достичь гармонии силы и красоты вам.\n\n"
+            f"Контакты: @irulebreakerr"
         )
         details = (
             "*Специализация:*\n\n"
@@ -88,13 +89,10 @@ async def show_trainer_info(callback: types.CallbackQuery):
             "• Сопровождение и поддержка мотивации: помощь в постановке реальных целей, отслеживание прогресса, своевременная корректировка программ и поддержка на каждом этапе.\n\n"
             "🎁 *Хочешь записаться на БЕСПЛАТНУЮ пробную тренировку?*\n"
             "Или на *ОНЛАЙН тренировки*!\n\n"
-            "Жду тебя на связи!  😉"
+            "Жду тебя на связи! 😉"
         )
         await send_photo_with_cache(callback.message.chat.id, photo_path, short_desc, "Markdown")
         await callback.message.answer(details, parse_mode="Markdown")
-    else:
-        text = trainer["description"]
-        await send_photo_with_cache(callback.message.chat.id, photo_path, text, "Markdown")
 
     # Пытаемся удалить исходное сообщение, игнорируем ошибку, если оно уже удалено
     try:
