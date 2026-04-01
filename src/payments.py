@@ -4,8 +4,8 @@ from aiogram import types
 TARIFFS = {
     "2weeks": {
         "name": "Две недели 🔥",
-        "price": 2999,
-        "stars_price": 3000,
+        "price": 2499,
+        "stars_price": 2500,
         "duration": "14 дней",
         "description": (
             "🔥 *14 ДНЕЙ К НОВОМУ СЕБЕ*\n\n"
@@ -36,8 +36,8 @@ TARIFFS = {
     },
     "month": {
         "name": "Месяц 🏃🏻",
-        "price": 5999,
-        "stars_price": 6000,
+        "price": 4999,
+        "stars_price": 5000,
         "duration": "1 месяц",
         "description": (
             "🏃🏻 *МЕСЯЦ ТРАНСФОРМАЦИИ*\n\n"
@@ -56,13 +56,13 @@ TARIFFS = {
         ),
         "icon": "🏃🏻"
     },
-    "halfyear": {
-        "name": "Пол года 👑",
-        "price": 19999,
-        "stars_price": 20000,
-        "duration": "6 месяцев",
+    "3months": {
+        "name": "3 месяца 💪",
+        "price": 13999,
+        "stars_price": 14000,
+        "duration": "3 месяца",
         "description": (
-            "👑 *ПОЛ ГОДА К ТЕЛУ МЕЧТЫ*\n\n"
+            "💪 *3 МЕСЯЦА ТРАНСФОРМАЦИИ*\n\n"
             "*Цели программы:*\n\n"
             "• Повышение общей физической подготовки и улучшение состояния здоровья\n"
             "• Формирование стройного и подтянутого тела\n"
@@ -107,9 +107,9 @@ PAYMENT_CONTACT = "@krivha9"
 
 def get_tariffs_keyboard():
     buttons = [
-        [InlineKeyboardButton(text="🔥 Две недели - 2999₽", callback_data="tariff_2weeks")],
-        [InlineKeyboardButton(text="🏃🏻 Месяц - 5999₽", callback_data="tariff_month")],
-        [InlineKeyboardButton(text="👑 Пол года - 19999₽", callback_data="tariff_halfyear")],
+        [InlineKeyboardButton(text="🔥 Две недели - 2499₽", callback_data="tariff_2weeks")],
+        [InlineKeyboardButton(text="🏃🏻 Месяц - 4999₽", callback_data="tariff_month")],
+        [InlineKeyboardButton(text="💪 3 месяца - 13999₽", callback_data="tariff_3months")],
         [InlineKeyboardButton(text="💎 Полная версия - 299₽/мес", callback_data="tariff_full_month")],
         [InlineKeyboardButton(text="◀ Назад", callback_data="back_to_main")]
     ]
@@ -131,12 +131,12 @@ async def show_tariffs(message_or_callback):
     text = (
         "💎 *Добро пожаловать в Gorbunov Sport*\n\n"
         "Выбери подходящий тариф и начни свой путь к телу мечты!\n\n"
-        "🔥 *Две недели* — 2999₽\n"
+        "🔥 *Две недели* — 2499₽\n"
         "   Быстрый старт и первые результаты\n\n"
-        "🏃🏻 *Месяц* — 5999₽\n"
+        "🏃🏻 *Месяц* — 4999₽\n"
         "   Полноценная трансформация\n\n"
-        "👑 *Пол года* — 19999₽\n"
-        "   Глобальные изменения и новый образ жизни\n\n"
+        "💪 *3 месяца* — 13999₽\n"
+        "   Углублённая работа и устойчивый результат\n\n"
         "💎 *Полная версия* — 299₽/мес\n"
         "   Все функции бота: питание, БАДы, ААС, анализы и чат\n\n"
         "👇 *Нажми на тариф, чтобы узнать подробности*"
