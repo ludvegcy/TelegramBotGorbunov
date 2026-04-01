@@ -162,7 +162,8 @@ async def process_manual_payment(callback: types.CallbackQuery):
         f"Сумма: {tariff['price']}₽\n\n"
         f"Для оплаты напишите администратору:\n"
         f"{PAYMENT_CONTACT}\n\n"
-        f"После подтверждения оплаты вам будет активирован премиум.",
+        f"После подтверждения оплаты вам будет активирован премиум-доступ, "
+        f"а также вы получите ссылку на закрытый чат премиум-пользователей.",
         parse_mode="Markdown",
         reply_markup=get_back_to_tariffs_button()
     )

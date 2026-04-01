@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from src.constants import REVIEW_TYPES
 from src.loader import dp
 from src.db import DatabaseManager
-from src.config import ADMINS
+from src.config import ADMINS, PREMIUM_CHAT_URL
 from src.reviews import ReviewManager
 
 def is_admin(user_id: int) -> bool:
@@ -49,14 +49,43 @@ async def admin_set_premium(message: types.Message):
                 is_premium=True,
                 premium_until=datetime.now() + timedelta(days=days)
             )
-            await message.answer(f"✅ Премиум активирован для user_id {user_id} на {days} дней", parse_mode=None)
+            await message.answer(
+                f"✅ Премиум активирован для user_id {user_id} на {days} дней\n\n"
+                f"🎉 Пользователю отправлена ссылка на закрытый чат:\n"
+                f"[Вступить в чат]({PREMIUM_CHAT_URL})",
+                parse_mode="Markdown"
+            )
+            try:
+                await bot.send_message(
+                    user_id,
+                    f"🎉 Ваш премиум-доступ активирован!\n\n"
+                    f"Присоединяйтесь к закрытому чату премиум-пользователей:\n"
+                    f"[Вступить в чат]({PREMIUM_CHAT_URL})",
+                    parse_mode="Markdown"
+                )
+            except Exception as e:
+                logger.error(f"Не удалось отправить ссылку пользователю {user_id}: {e}")
         else:
             await DatabaseManager.create_user(
                 telegram_id=user_id,
                 is_premium=True,
                 premium_until=datetime.now() + timedelta(days=days)
             )
-            await message.answer(f"✅ Создан новый пользователь {user_id} с премиум на {days} дней", parse_mode=None)
+            await message.answer(
+                f"✅ Создан новый пользователь {user_id} с премиум на {days} дней\n\n"
+                f"🎉 Ссылка на чат отправлена пользователю.",
+                parse_mode="Markdown"
+            )
+            try:
+                await bot.send_message(
+                    user_id,
+                    f"🎉 Вам активирован премиум-доступ!\n\n"
+                    f"Присоединяйтесь к закрытому чату премиум-пользователей:\n"
+                    f"[Вступить в чат]({PREMIUM_CHAT_URL})",
+                    parse_mode="Markdown"
+                )
+            except Exception as e:
+                logger.error(f"Не удалось отправить ссылку пользователю {user_id}: {e}")
     except ValueError:
         await message.answer("❌ Неверный формат. Используйте: /premium 123456789 30", parse_mode=None)
 
