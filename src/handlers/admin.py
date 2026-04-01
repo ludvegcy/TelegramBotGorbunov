@@ -1,11 +1,14 @@
+import logging
 from datetime import datetime, timedelta
 from aiogram import types, F
 from aiogram.filters import Command
 from src.constants import REVIEW_TYPES
-from src.loader import dp
+from src.loader import dp, bot
 from src.db import DatabaseManager
 from src.config import ADMINS, PREMIUM_CHAT_URL
 from src.reviews import ReviewManager
+
+logger = logging.getLogger(__name__)
 
 def is_admin(user_id: int) -> bool:
     return user_id in ADMINS
@@ -55,6 +58,7 @@ async def admin_set_premium(message: types.Message):
                 f"[Вступить в чат]({PREMIUM_CHAT_URL})",
                 parse_mode="Markdown"
             )
+            # Отправляем ссылку самому пользователю
             try:
                 await bot.send_message(
                     user_id,
@@ -76,6 +80,7 @@ async def admin_set_premium(message: types.Message):
                 f"🎉 Ссылка на чат отправлена пользователю.",
                 parse_mode="Markdown"
             )
+            # Отправляем ссылку новому пользователю
             try:
                 await bot.send_message(
                     user_id,
